@@ -9,7 +9,6 @@ import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { kindLabel } from "@/components/site/ProofDocuments";
 import { useSession } from "@/lib/use-session";
-import { getMyRoles } from "@/lib/account-data";
 
 export const Route = createFileRoute("/_authenticated/account/admin")({
   head: () => ({
@@ -42,8 +41,12 @@ function AdminReview() {
   const { user } = useSession();
   const qc = useQueryClient();
   const [busy, setBusy] = useState<string | null>(null);
-  const roles = useQuery({ queryKey: ["roles", user?.id], queryFn: () => getMyRoles(user!.id), enabled: !!user?.id });
-  const isAdmin = (roles.data ?? []).includes("admin");
+  const roles = useQuery({
+    queryKey: ["is_admin", user?.id],
+    queryFn: async () => (await supabase.rpc("has_role", { _user_id: user!.id, _role: "admin" })).data === true,
+    enabled: !!user?.id,
+  });
+  const isAdmin = roles.data === true;
   const pending = useQuery({ queryKey: ["admin_pending"], queryFn: fetchPending, enabled: isAdmin });
 
   async function openDoc(path: string) {

@@ -9,6 +9,7 @@ const row = {
   levels: [], curricula: [], languages: [], skills: [], qualifications: [{ title: "" }, { title: "B.Ed", year: "" }],
   achievements: [{ title: "Award", url: "javascript:alert(1)" }], availability: [{ day: "Mon" }],
   completed_at: null, created_at: "", updated_at: "",
+  hidden_at: null, last_active_at: null, last_checkin_at: null, paused_at: null, reactivated_at: null,
 };
 
 describe("tutor profile data", () => {
