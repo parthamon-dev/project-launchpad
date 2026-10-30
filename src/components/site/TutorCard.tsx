@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Clock, GraduationCap, MapPin } from "lucide-react";
+import { Clock, GraduationCap, MapPin, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Tutor } from "@/data/sample";
 
@@ -20,6 +20,13 @@ export function TutorCard({ tutor: t }: { tutor: Tutor }) {
         </div>
       )}
       <div className="flex flex-1 flex-col p-6">
+        {t.badges && t.badges.length > 0 && (
+          <div className="mb-2 flex flex-wrap gap-1.5">
+            {t.badges.map((b) => (
+              <span key={b} className="inline-flex items-center gap-1 rounded-full bg-mint px-2.5 py-1 text-xs font-bold text-primary"><Zap className="size-3" /> {b}</span>
+            ))}
+          </div>
+        )}
         <h3 className="text-xl font-extrabold">{t.name}</h3>
         {t.qualification && <p className="text-sm text-muted-foreground">{t.qualification}</p>}
         {t.subjects.length > 0 && (
