@@ -79,7 +79,7 @@ export function SiteHeader() {
                   </Link>
                 </Button>
               )}
-              {roles.includes("admin") && (
+              {(roles as string[]).includes("admin") && (
                 <Button variant="ghost" className="rounded-full font-semibold" asChild>
                   <Link to="/account/admin">Approvals</Link>
                 </Button>
