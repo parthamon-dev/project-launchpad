@@ -1,6 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 import type { TeachingMode, Tutor } from "@/data/sample";
+import { activityBadges } from "@/lib/activity";
 
 export type Qualification = { title: string; institution?: string; year?: string };
 export type Achievement = { title: string; issuer?: string; year?: string; url?: string };
@@ -88,12 +89,19 @@ async function signPhotos(paths: string[]): Promise<Record<string, string>> {
 async function hydrate(rows: Tables<"teacher_profiles">[]): Promise<TutorDetail[]> {
   if (rows.length === 0) return [];
   const ids = rows.map((r) => r.user_id);
-  const [{ data: names }, photos] = await Promise.all([
+  const [{ data: names }, photos, { data: activity }] = await Promise.all([
     supabase.from("profiles").select("id, display_name").in("id", ids),
     signPhotos(rows.map((r) => r.photo_url).filter((p): p is string => !!p)),
+    supabase.rpc("tutor_activity", { _ids: rows.map((r) => r.id) }),
   ]);
+  const badgesById = new Map((activity ?? []).map((a) => [a.teacher_profile_id, activityBadges({ lastActiveAt: a.last_active_at, avgReplyMinutes: a.avg_reply_minutes, replies: a.replies ?? 0 })]));
   const nameById = new Map((names ?? []).map((n) => [n.id, n.display_name ?? ""]));
-  return rows.map((r) => toTutorDetail(r, nameById.get(r.user_id) ?? "", r.photo_url ? photos[r.photo_url] : undefined));
+  return rows.map((r) => {
+    const t = toTutorDetail(r, nameById.get(r.user_id) ?? "", r.photo_url ? photos[r.photo_url] : undefined);
+    const b = badgesById.get(r.id);
+    if (b?.length) t.badges = b;
+    return t;
+  });
 }
 
 /** All approved tutor listings (RLS only exposes approved rows publicly). */
@@ -103,6 +111,8 @@ export async function fetchApprovedTutors(): Promise<TutorDetail[]> {
     .select("*")
     .eq("status", "approved")
     .not("completed_at", "is", null)
+    .is("hidden_at", null)
+    .is("paused_at", null)
     .order("updated_at", { ascending: false });
   if (error) throw error;
   return hydrate(data ?? []);
@@ -110,7 +120,7 @@ export async function fetchApprovedTutors(): Promise<TutorDetail[]> {
 
 export async function fetchTutor(id: string): Promise<TutorDetail | null> {
   if (!/^[0-9a-f-]{36}$/i.test(id)) return null;
-  const { data, error } = await supabase.from("teacher_profiles").select("*").eq("id", id).eq("status", "approved").not("completed_at", "is", null).maybeSingle();
+  const { data, error } = await supabase.from("teacher_profiles").select("*").eq("id", id).eq("status", "approved").not("completed_at", "is", null).is("hidden_at", null).is("paused_at", null).maybeSingle();
   if (error) throw error;
   if (!data) return null;
   return (await hydrate([data]))[0] ?? null;

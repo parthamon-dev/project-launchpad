@@ -9,6 +9,8 @@ import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { InboxList } from "@/components/site/InboxList";
 import { TeacherProfileEditor } from "@/components/site/TeacherProfileEditor";
+import { TutorActivityPrompts } from "@/components/site/TutorActivityPrompts";
+import { ProofDocuments } from "@/components/site/ProofDocuments";
 import { useSession } from "@/lib/use-session";
 import { ensureRoleProfile, getMyRoles } from "@/lib/account-data";
 import { fetchInbox } from "@/lib/enquiries";
@@ -120,6 +122,7 @@ function TeacherDashboard() {
             </div>
           ) : (
             <div className="space-y-6">
+              <TutorActivityPrompts teacher={teacher} onChanged={refresh} />
               <StatusBanner state={state} missing={missing} percent={completeness.percent} teacherId={teacher.id} />
 
               <section className={`card-soft p-5 sm:p-7 ${unread > 0 ? "ring-2 ring-primary/40" : ""}`} aria-labelledby="inbox-h">
@@ -148,6 +151,8 @@ function TeacherDashboard() {
                 )}
               </section>
 
+              {userId && teacher.status !== "approved" && <ProofDocuments userId={userId} teacherId={teacher.id} />}
+
               {userId && (
                 <TeacherProfileEditor
                   key={teacher.id}
@@ -170,7 +175,7 @@ function TeacherDashboard() {
 function StatusBanner({ state, missing, percent, teacherId }: { state: ReturnType<typeof listingState>; missing: string[]; percent: number; teacherId: string }) {
   const meta = {
     incomplete: { icon: PenLine, cls: "bg-butter", title: "Profile incomplete", text: `Add your ${missing.slice(0, 3).join(", ")}${missing.length > 3 ? "…" : ""} so your listing can be reviewed.` },
-    pending: { icon: Clock, cls: "bg-secondary", title: "Pending admin approval", text: "Your profile is complete. An admin will review it before it appears in the tutor directory." },
+    pending: { icon: Clock, cls: "bg-secondary", title: "Pending admin approval", text: "Your profile is complete. Upload a certificate or ID below — an admin reviews it before you appear in the tutor directory." },
     rejected: { icon: PenLine, cls: "bg-rose", title: "Changes requested", text: "An admin asked for changes. Update your profile and it will be reviewed again." },
     live: { icon: CheckCircle2, cls: "bg-mint", title: "Live in the directory", text: "Students can find your profile and contact you." },
   }[state];

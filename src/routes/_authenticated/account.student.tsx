@@ -9,6 +9,7 @@ import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { EditableField } from "@/components/site/EditableField";
 import { InboxList } from "@/components/site/InboxList";
+import { FollowUpSuggestions } from "@/components/site/FollowUpSuggestions";
 import { useSession } from "@/lib/use-session";
 import { ensureRoleProfile, getMyRoles } from "@/lib/account-data";
 import { displayNameSchema } from "@/lib/account";
@@ -140,6 +141,7 @@ function StudentArea() {
                 ) : (
                   <div className="mt-3 -mx-2"><InboxList threads={threads} /></div>
                 )}
+                {threads.length > 0 && <div className="mt-5"><FollowUpSuggestions threads={threads} /></div>}
               </section>
 
               <div className="space-y-6">

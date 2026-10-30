@@ -8,6 +8,7 @@ export type ThreadSummary = {
   educationLevel: string;
   status: string;
   createdAt: string;
+  tutorRepliedAt: string | null;
   lastMessageAt: string;
   lastSenderRole: string;
   isGuest: boolean;
@@ -72,6 +73,7 @@ export async function fetchInbox(userId: string, role: InboxRole, teacherProfile
     educationLevel: r.education_level,
     status: statusLabel(role, r.last_sender_role, latest.has(r.id)),
     createdAt: r.created_at,
+    tutorRepliedAt: r.tutor_replied_at,
     lastMessageAt: r.last_message_at,
     lastSenderRole: r.last_sender_role,
     isGuest: !r.student_user_id,
