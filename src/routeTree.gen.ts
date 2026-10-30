@@ -18,6 +18,7 @@ import { Route as AuthStudentRouteImport } from './routes/auth.student'
 import { Route as AuthTeacherRouteImport } from './routes/auth.teacher'
 import { Route as TutorsIndexRouteImport } from './routes/tutors.index'
 import { Route as TutorsIdRouteImport } from './routes/tutors.$id'
+import { Route as AuthenticatedAccountAdminRouteImport } from './routes/_authenticated/account.admin'
 import { Route as AuthenticatedAccountStudentRouteImport } from './routes/_authenticated/account.student'
 import { Route as AuthenticatedAccountTeacherRouteImport } from './routes/_authenticated/account.teacher'
 import { Route as AuthenticatedAccountEnquiriesIdRouteImport } from './routes/_authenticated/account.enquiries.$id'
@@ -66,6 +67,12 @@ const TutorsIdRoute = TutorsIdRouteImport.update({
   path: '/tutors/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAccountAdminRoute =
+  AuthenticatedAccountAdminRouteImport.update({
+    id: '/account/admin',
+    path: '/account/admin',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAccountStudentRoute =
   AuthenticatedAccountStudentRouteImport.update({
     id: '/account/student',
@@ -94,6 +101,7 @@ export interface FileRoutesByFullPath {
   '/tutors/$id': typeof TutorsIdRoute
   '/auth/': typeof AuthIndexRoute
   '/tutors/': typeof TutorsIndexRoute
+  '/account/admin': typeof AuthenticatedAccountAdminRoute
   '/account/student': typeof AuthenticatedAccountStudentRoute
   '/account/teacher': typeof AuthenticatedAccountTeacherRoute
   '/account/enquiries/$id': typeof AuthenticatedAccountEnquiriesIdRoute
@@ -106,6 +114,7 @@ export interface FileRoutesByTo {
   '/tutors/$id': typeof TutorsIdRoute
   '/auth': typeof AuthIndexRoute
   '/tutors': typeof TutorsIndexRoute
+  '/account/admin': typeof AuthenticatedAccountAdminRoute
   '/account/student': typeof AuthenticatedAccountStudentRoute
   '/account/teacher': typeof AuthenticatedAccountTeacherRoute
   '/account/enquiries/$id': typeof AuthenticatedAccountEnquiriesIdRoute
@@ -121,6 +130,7 @@ export interface FileRoutesById {
   '/tutors/$id': typeof TutorsIdRoute
   '/auth/': typeof AuthIndexRoute
   '/tutors/': typeof TutorsIndexRoute
+  '/_authenticated/account/admin': typeof AuthenticatedAccountAdminRoute
   '/_authenticated/account/student': typeof AuthenticatedAccountStudentRoute
   '/_authenticated/account/teacher': typeof AuthenticatedAccountTeacherRoute
   '/_authenticated/account/enquiries/$id': typeof AuthenticatedAccountEnquiriesIdRoute
@@ -136,6 +146,7 @@ export interface FileRouteTypes {
     | '/tutors/$id'
     | '/auth/'
     | '/tutors/'
+    | '/account/admin'
     | '/account/student'
     | '/account/teacher'
     | '/account/enquiries/$id'
@@ -148,6 +159,7 @@ export interface FileRouteTypes {
     | '/tutors/$id'
     | '/auth'
     | '/tutors'
+    | '/account/admin'
     | '/account/student'
     | '/account/teacher'
     | '/account/enquiries/$id'
@@ -162,6 +174,7 @@ export interface FileRouteTypes {
     | '/tutors/$id'
     | '/auth/'
     | '/tutors/'
+    | '/_authenticated/account/admin'
     | '/_authenticated/account/student'
     | '/_authenticated/account/teacher'
     | '/_authenticated/account/enquiries/$id'
@@ -240,6 +253,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TutorsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/account/admin': {
+      id: '/_authenticated/account/admin'
+      path: '/account/admin'
+      fullPath: '/account/admin'
+      preLoaderRoute: typeof AuthenticatedAccountAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/account/student': {
       id: '/_authenticated/account/student'
       path: '/account/student'
@@ -265,12 +285,14 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAccountAdminRoute: typeof AuthenticatedAccountAdminRoute
   AuthenticatedAccountStudentRoute: typeof AuthenticatedAccountStudentRoute
   AuthenticatedAccountTeacherRoute: typeof AuthenticatedAccountTeacherRoute
   AuthenticatedAccountEnquiriesIdRoute: typeof AuthenticatedAccountEnquiriesIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAccountAdminRoute: AuthenticatedAccountAdminRoute,
   AuthenticatedAccountStudentRoute: AuthenticatedAccountStudentRoute,
   AuthenticatedAccountTeacherRoute: AuthenticatedAccountTeacherRoute,
   AuthenticatedAccountEnquiriesIdRoute: AuthenticatedAccountEnquiriesIdRoute,

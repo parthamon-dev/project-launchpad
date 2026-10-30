@@ -79,6 +79,11 @@ export function SiteHeader() {
                   </Link>
                 </Button>
               )}
+              {roles.includes("admin") && (
+                <Button variant="ghost" className="rounded-full font-semibold" asChild>
+                  <Link to="/account/admin">Approvals</Link>
+                </Button>
+              )}
               <Button variant="pill-outline" className="font-semibold" onClick={signOut}>
                 <LogOut /> Sign out
               </Button>
